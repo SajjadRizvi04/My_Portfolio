@@ -1,0 +1,13 @@
+# Rebuilds the site daily so GitHub/LeetCode stats stay fresh.
+# Setup: create a Deploy Hook in Vercel (or Netlify), then add its URL as the
+# repository secret DEPLOY_HOOK_URL (GitHub: Settings > Secrets and variables > Actions).
+name: Refresh portfolio stats
+on:
+  schedule:
+    - cron: "0 3 * * *"
+  workflow_dispatch:
+jobs:
+  redeploy:
+    runs-on: ubuntu-latest
+    steps:
+      - run: curl -fsS -X POST "${{ secrets.DEPLOY_HOOK_URL }}"

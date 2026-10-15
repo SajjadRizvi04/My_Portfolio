@@ -1,0 +1,35 @@
+@import "tailwindcss";
+
+/* Design tokens. Change --color-accent to retheme the whole site. */
+@theme {
+  --color-paper: #efe6d2;
+  --color-paper-light: #f7f1e3;
+  --color-ink: #1c1a17;
+  --color-body: #2a2722;
+  --color-muted: #4a453b;
+  --color-subtle: #6a6355;
+  --color-card: #e7dcc4;
+  --color-accent: #8c2f23;
+
+  /* heatmap scales: 0 = no activity, 4 = most */
+  --color-red-0: #e0d5bc;
+  --color-red-1: #d9b8a6;
+  --color-red-2: #c0826c;
+  --color-red-3: #a5503f;
+  --color-red-4: #8c2f23;
+  --color-ink-0: #e0d5bc;
+  --color-ink-1: #c9bfa6;
+  --color-ink-2: #9a9078;
+  --color-ink-3: #5e574a;
+  --color-ink-4: #1c1a17;
+
+  --font-display: "Special Elite", "Courier New", monospace;
+  --font-body: "Courier Prime", "Courier New", monospace;
+}
+
+@layer base {
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  body { @apply bg-paper font-body text-[17px] leading-normal text-ink; }
+  a:focus-visible { @apply outline-2 outline-offset-4 outline-accent; }
+}
