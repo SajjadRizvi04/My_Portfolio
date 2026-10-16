@@ -1,28 +1,69 @@
 import { Heatmap, Legend } from "./Heatmap.jsx";
 import { useStats } from "./hooks.js";
 import {
-  profile, stackStrip, featured, projects, leetcodeFallback, timeline, skills, about,
+  profile,
+  stackStrip,
+  featured,
+  projects,
+  leetcodeFallback,
+  timeline,
+  skills,
+  about,
 } from "./data.js";
+import {
+  motion,
+  MotionConfig,
+  useScroll,
+  useSpring,
+  useTransform,
+  useReducedMotion,
+} from "motion/react";
+import { useRef } from "react";
+const ease = [0.22, 1, 0.36, 1]; // fast start, long soft landing
 
+// Scroll-triggered reveal: starts offset, slides to rest when 20% is on screen, once only.
+const reveal = ({ x = 0, y = 0, delay = 0 } = {}) => ({
+  initial: { opacity: 0, x, y },
+  whileInView: {
+    opacity: 1,
+    x: 0,
+    y: 0,
+    transition: { duration: 0.7, ease, delay },
+  },
+  viewport: { once: true, amount: 0.2 },
+});
 // Shared class strings
-const card = "flex min-w-0 flex-col gap-3.5 border-[1.5px] border-ink bg-card p-7";
-const h2 = "border-b-2 border-ink pb-3 font-display text-[28px] font-normal sm:text-[34px]";
+const card =
+  "flex min-w-0 flex-col gap-3.5 border-[1.5px] border-ink bg-card p-7";
+const h2 =
+  "border-b-2 border-ink pb-3 font-display text-[28px] font-normal sm:text-[34px]";
 const h3 = "font-display text-[22px] font-normal";
 const meta = "text-[13px] text-subtle";
-const btn = "inline-flex min-h-11 items-center px-6 py-2.5 font-bold transition-colors";
+const btn =
+  "inline-flex min-h-11 items-center px-6 py-2.5 font-bold transition-colors";
 const section = "flex scroll-mt-6 flex-col gap-8";
 
 const Tags = ({ items }) => (
   <ul className="flex flex-wrap gap-2.5 text-[13px] text-accent">
-    {items.map((t) => <li key={t}>{t}</li>)}
+    {items.map((t) => (
+      <li key={t}>{t}</li>
+    ))}
   </ul>
 );
 
 const Links = ({ source, demo }) =>
   source || demo ? (
     <div className="flex gap-6 font-bold">
-      {source && <a className="hover:text-accent" href={source}>Source on GitHub</a>}
-      {demo && <a className="hover:text-accent" href={demo}>Live demo</a>}
+      {source && (
+        <a className="hover:text-accent" href={source}>
+          Source on GitHub
+        </a>
+      )}
+      {demo && (
+        <a className="hover:text-accent" href={demo}>
+          Live demo
+        </a>
+      )}
     </div>
   ) : null;
 
@@ -36,12 +77,27 @@ const Row = ({ left, right }) => (
 function Nav() {
   return (
     <nav className="flex flex-wrap items-center justify-between gap-4">
-      <a className="text-lg font-bold" href="#top">sajjad ali</a>
+      <a className="text-lg font-bold" href="#top">
+        sajjad ali
+      </a>
       <div className="flex flex-wrap items-center gap-x-7 gap-y-2 text-[15px] text-muted">
-        {[["Work", "#work"], ["Activity", "#activity"], ["Experience", "#path"], ["Skills", "#skills"], ["About", "#about"]].map(([l, h]) => (
-          <a key={h} className="hover:text-accent" href={h}>{l}</a>
+        {[
+          ["Work", "#work"],
+          ["Activity", "#activity"],
+          ["Experience", "#path"],
+          ["Skills", "#skills"],
+          ["About", "#about"],
+        ].map(([l, h]) => (
+          <a key={h} className="hover:text-accent" href={h}>
+            {l}
+          </a>
         ))}
-        <a className={`${btn} bg-accent text-paper hover:bg-ink`} href="#contact">Let's talk</a>
+        <a
+          className={`${btn} bg-accent text-paper hover:bg-ink`}
+          href="#contact"
+        >
+          Let's talk
+        </a>
       </div>
     </nav>
   );
@@ -50,23 +106,53 @@ function Nav() {
 function Hero() {
   return (
     <section id="top" className="flex flex-wrap items-center gap-14">
-      <div className="flex basis-[440px] flex-1 flex-col gap-6">
+      <motion.div
+        initial={{ opacity: 0, y: 60 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="flex basis-110 flex-1 flex-col gap-6"
+      >
         <p className="text-[15px] font-bold text-accent">{profile.status}</p>
-        <h1 className="font-display text-4xl font-normal leading-[1.15] sm:text-[50px]">{profile.headline}</h1>
-        <p className="max-w-[540px] text-lg leading-relaxed text-muted">{profile.intro}</p>
+        <h1 className="font-display text-4xl font-normal leading-[1.15] sm:text-[50px]">
+          {profile.headline}
+        </h1>
+        <p className="max-w-135 text-lg leading-relaxed text-muted">
+          {profile.intro}
+        </p>
         <div className="flex flex-wrap gap-4">
-          <a className={`${btn} bg-accent text-paper hover:bg-ink`} href="#work">View projects</a>
+          <a
+            className={`${btn} bg-accent text-paper hover:bg-ink`}
+            href="#work"
+          >
+            View projects
+          </a>
           {profile.resume && (
-            <a className={`${btn} border-[1.5px] border-ink hover:bg-ink hover:text-paper`} href={profile.resume}>Download resume</a>
+            <a
+              className={`${btn} border-[1.5px] border-ink hover:bg-ink hover:text-paper`}
+              href={profile.resume}
+            >
+              Download resume
+            </a>
           )}
         </div>
-      </div>
-      <figure className="m-0 flex max-w-[440px] basis-80 flex-1 flex-col gap-3 border-[1.5px] border-ink bg-paper-light px-3 pb-4 pt-3">
-        <img className="block aspect-[4/5] w-full object-cover object-[50%_20%]" src={profile.photo} alt={profile.photoAlt} />
+      </motion.div>
+      <motion.figure
+        initial={{ opacity: 0, x: 60 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.6 }}
+        className="m-0 flex max-w-110 basis-80 flex-1 flex-col gap-3 border-[1.5px] border-ink bg-paper-light px-3 pb-4 pt-3"
+      >
+        <img
+          className="block aspect-4/5 w-full object-cover object-[50%_20%]"
+          src={profile.photo}
+          alt={profile.photoAlt}
+        />
         <figcaption className="text-sm text-muted">
-          {profile.name}, final-year B.Tech CSE<br />{profile.location}
+          {profile.name}, final-year B.Tech CSE
+          <br />
+          {profile.location}
         </figcaption>
-      </figure>
+      </motion.figure>
     </section>
   );
 }
@@ -74,25 +160,46 @@ function Hero() {
 function Work() {
   return (
     <section id="work" className={section}>
-      <h2 className={h2}>Selected work</h2>
-      <article className={`${card} gap-5 border-2 p-6 sm:p-10`}>
+      <motion.h2 className={h2} {...reveal({ x: -40 })}>
+        Selected work
+      </motion.h2>
+
+      <motion.article
+        {...reveal({ y: 60 })}
+        className={`${card} gap-5 border-2 p-6 sm:p-10`}
+      >
         <p className={meta}>{featured.label}</p>
         <h3 className={`${h3} text-[32px]`}>{featured.title}</h3>
-        <p className="max-w-[820px] leading-relaxed text-muted">{featured.summary}</p>
+        <p className="max-w-205 leading-relaxed text-muted">
+          {featured.summary}
+        </p>
         <div className="grid grid-cols-[repeat(auto-fit,minmax(260px,1fr))] gap-5 leading-snug text-body">
-          {featured.points.map((p) => <p key={p}>{p}</p>)}
+          {featured.points.map((p, i) => (
+            <motion.p key={p} {...reveal({ y: 24, delay: 0.25 + i * 0.1 })}>
+              {p}
+            </motion.p>
+          ))}
         </div>
         <Tags items={featured.tags} />
         <Links source={featured.source} demo={featured.demo} />
-      </article>
+      </motion.article>
+
       <div className="grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-6">
-        {projects.map((p) => (
-          <article className={card} key={p.title}>
+        {projects.map((p, i) => (
+          <motion.article
+            key={p.title}
+            {...reveal({ y: 60, delay: i * 0.12 })}
+            whileHover={{
+              y: -6,
+              transition: { duration: 0.25, ease: "easeOut" },
+            }}
+            className={card}
+          >
             <h3 className={h3}>{p.title}</h3>
             <p className="leading-relaxed text-muted">{p.text}</p>
             <Tags items={p.tags} />
             <Links source={p.source} demo={p.demo} />
-          </article>
+          </motion.article>
         ))}
       </div>
     </section>
@@ -103,14 +210,20 @@ function GithubCard({ data, loading }) {
   const url = `https://github.com/${profile.github}`;
 
   return (
-    <article className={card}>
+    <motion.article {...reveal({ x: -80 })} className={card}>
       <div className="flex flex-wrap justify-between gap-2">
         <h3 className={h3}>GitHub contributions</h3>
-        <a className="text-sm font-bold text-accent" href={url}>github.com/{profile.github}</a>
+        <a className="text-sm font-bold text-accent" href={url}>
+          github.com/{profile.github}
+        </a>
       </div>
       {data?.days?.length > 0 ? (
         <>
-          <Heatmap days={data.days} tone="red" label="GitHub contribution heatmap for the last year" />
+          <Heatmap
+            days={data.days}
+            tone="red"
+            label="GitHub contribution heatmap for the last year"
+          />
           <div className="flex flex-wrap justify-between gap-2 text-[13px] text-subtle">
             <span>{data.total} contributions in the last year</span>
             <Legend tone="red" />
@@ -118,7 +231,11 @@ function GithubCard({ data, loading }) {
           {data.activity.length > 0 && (
             <ul className="flex flex-col gap-2.5 text-[15px]">
               {data.activity.map((a) => (
-                <Row key={a.id} left={a.message} right={`${a.repo}, ${a.date}`} />
+                <Row
+                  key={a.id}
+                  left={a.message}
+                  right={`${a.repo}, ${a.date}`}
+                />
               ))}
             </ul>
           )}
@@ -126,10 +243,14 @@ function GithubCard({ data, loading }) {
       ) : (
         <p className="text-muted">
           {loading ? "Loading contributions..." : "No contribution data yet. "}
-          {!loading && <a className="text-accent" href={url}>See it on GitHub</a>}
+          {!loading && (
+            <a className="text-accent" href={url}>
+              See it on GitHub
+            </a>
+          )}
         </p>
       )}
-    </article>
+    </motion.article>
   );
 }
 
@@ -138,29 +259,48 @@ function LeetCodeCard({ data }) {
   const url = profile.leetcode && `https://leetcode.com/u/${profile.leetcode}`;
 
   return (
-    <article className={card}>
+    <motion.article {...reveal({ x: 80 })} className={card}>
       <div className="flex flex-wrap justify-between gap-2">
         <h3 className={h3}>LeetCode</h3>
-        {url && <a className="text-sm font-bold text-accent" href={url}>leetcode.com/u/{profile.leetcode}</a>}
+        {url && (
+          <a className="text-sm font-bold text-accent" href={url}>
+            leetcode.com/u/{profile.leetcode}
+          </a>
+        )}
       </div>
 
       <div className="flex flex-wrap items-end gap-x-10 gap-y-4">
         <div className="flex items-baseline gap-3">
-          <span className="font-display text-6xl leading-none">{stats ? stats.solved : leetcodeFallback.solved}</span>
-          <span className="text-muted">problems solved{stats ? "" : ` in ${leetcodeFallback.language}`}</span>
+          <span className="font-display text-6xl leading-none">
+            {stats ? stats.solved : leetcodeFallback.solved}
+          </span>
+          <span className="text-muted">
+            problems solved{stats ? "" : ` in ${leetcodeFallback.language}`}
+          </span>
         </div>
         {stats && (
           <ul className="flex gap-6 text-[15px]">
-            <li>Easy <b>{stats.easy}</b></li>
-            <li>Medium <b>{stats.medium}</b></li>
-            <li>Hard <b>{stats.hard}</b></li>
+            <li>
+              Easy <b>{stats.easy}</b>
+            </li>
+            <li>
+              Medium <b>{stats.medium}</b>
+            </li>
+            <li>
+              Hard <b>{stats.hard}</b>
+            </li>
           </ul>
         )}
       </div>
 
       {data?.days?.length > 0 && (
         <>
-          <Heatmap days={data.days} tone="ink" unit="submissions" label="LeetCode submission heatmap for the last year" />
+          <Heatmap
+            days={data.days}
+            tone="ink"
+            unit="submissions"
+            label="LeetCode submission heatmap for the last year"
+          />
           <div className="flex flex-wrap justify-between gap-2 text-[13px] text-subtle">
             <span>
               {data.total} submissions, {data.activeDays} active days
@@ -170,7 +310,7 @@ function LeetCodeCard({ data }) {
           </div>
         </>
       )}
-    </article>
+    </motion.article>
   );
 }
 
@@ -185,18 +325,81 @@ function Activity() {
   );
 }
 
+// function Path() {
+//   return (
+//     <section id="path" className={section}>
+//       <h2 className={h2}>Experience and education</h2>
+//       <div className="ml-1.5 flex flex-col gap-10 border-l-2 border-ink">
+//         {timeline.map((t) => (
+//           <div
+//             key={t.title}
+//             className="relative flex flex-col gap-1.5 pl-8 before:absolute before:-left-1.75 before:top-1.5 before:size-3 before:bg-accent before:content-['']"
+//           >
+//             <p className={meta}>{t.when}</p>
+//             <h3 className={h3}>{t.title}</h3>
+//             <p className="font-bold text-accent">{t.org}</p>
+//             <p className="leading-relaxed text-muted">{t.text}</p>
+//           </div>
+//         ))}
+//       </div>
+//     </section>
+//   );
+// }
+
+function PathItem({ t, progress, start }) {
+  const reduce = useReducedMotion();
+  const end = start + 0.12;
+  const opacity = useTransform(progress, [start, end], [0, 1]);
+  const x = useTransform(progress, [start, end], [-40, 0]);
+  const dot = useTransform(progress, [start, end], [0, 1]);
+
+  return (
+    <motion.div
+      style={reduce ? undefined : { opacity, x }}
+      className="relative flex flex-col gap-1.5 pl-8"
+    >
+      <motion.span
+        style={reduce ? undefined : { scale: dot }}
+        className="absolute -left-[5px] top-1.5 size-3 bg-accent"
+      />
+      <p className={meta}>{t.when}</p>
+      <h3 className={h3}>{t.title}</h3>
+      <p className="font-bold text-accent">{t.org}</p>
+      <p className="leading-relaxed text-muted">{t.text}</p>
+    </motion.div>
+  );
+}
+
 function Path() {
+  const ref = useRef(null);
+  const reduce = useReducedMotion();
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start 75%", "end 55%"], // 0 when the top hits 75% down the screen, 1 when the bottom hits 55%
+  });
+  const progress = useSpring(scrollYProgress, { stiffness: 120, damping: 30, restDelta: 0.001 });
+
   return (
     <section id="path" className={section}>
-      <h2 className={h2}>Experience and education</h2>
-      <div className="ml-1.5 flex flex-col gap-10 border-l-2 border-ink">
-        {timeline.map((t) => (
-          <div key={t.title} className="relative flex flex-col gap-1.5 pl-8 before:absolute before:-left-[7px] before:top-1.5 before:size-3 before:bg-accent before:content-['']">
-            <p className={meta}>{t.when}</p>
-            <h3 className={h3}>{t.title}</h3>
-            <p className="font-bold text-accent">{t.org}</p>
-            <p className="leading-relaxed text-muted">{t.text}</p>
-          </div>
+      <motion.h2 className={h2} {...reveal({ x: -40 })}>
+        Experience and education
+      </motion.h2>
+
+      <div ref={ref} className="relative ml-1.5 flex flex-col gap-16">
+        {/* faint track, then the ink line that draws over it */}
+        <div className="absolute left-0 top-0 h-full w-0.5 bg-ink/15" />
+        <motion.div
+          style={{ scaleY: reduce ? 1 : progress }}
+          className="absolute left-0 top-0 h-full w-0.5 origin-top bg-ink"
+        />
+
+        {timeline.map((t, i) => (
+          <PathItem
+            key={t.title}
+            t={t}
+            progress={progress}
+            start={(i / timeline.length) * 0.8 + 0.02}
+          />
         ))}
       </div>
     </section>
@@ -209,7 +412,10 @@ function Skills() {
       <h2 className={h2}>Skills</h2>
       <div className="grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-6">
         {skills.map((s) => (
-          <div key={s.label} className="flex flex-col gap-2 border-t-2 border-accent pt-4">
+          <div
+            key={s.label}
+            className="flex flex-col gap-2 border-t-2 border-accent pt-4"
+          >
             <p className={meta}>{s.label}</p>
             <p>{s.value}</p>
           </div>
@@ -225,7 +431,12 @@ function About() {
       <h2 className={h2}>About</h2>
       <div className="flex flex-wrap gap-10 text-lg">
         {about.map((p) => (
-          <p key={p} className="max-w-[640px] flex-1 basis-80 leading-relaxed text-muted">{p}</p>
+          <p
+            key={p}
+            className="max-w-[640px] flex-1 basis-80 leading-relaxed text-muted"
+          >
+            {p}
+          </p>
         ))}
       </div>
     </section>
@@ -234,14 +445,24 @@ function About() {
 
 function Contact() {
   const links = [
-    profile.email && { label: profile.email, href: `mailto:${profile.email}`, solid: true },
+    profile.email && {
+      label: profile.email,
+      href: `mailto:${profile.email}`,
+      solid: true,
+    },
     { label: "GitHub", href: `https://github.com/${profile.github}` },
-    profile.leetcode && { label: "LeetCode", href: `https://leetcode.com/u/${profile.leetcode}` },
+    profile.leetcode && {
+      label: "LeetCode",
+      href: `https://leetcode.com/u/${profile.leetcode}`,
+    },
     profile.linkedin && { label: "LinkedIn", href: profile.linkedin },
   ].filter(Boolean);
 
   return (
-    <section id="contact" className="flex scroll-mt-6 flex-wrap items-center justify-between gap-6 bg-accent px-6 py-10 text-paper sm:px-12 sm:py-14">
+    <section
+      id="contact"
+      className="flex scroll-mt-6 flex-wrap items-center justify-between gap-6 bg-accent px-6 py-10 text-paper sm:px-12 sm:py-14"
+    >
       <h2 className="max-w-[560px] font-display text-[28px] font-normal leading-tight sm:text-4xl">
         Hiring entry-level full stack engineers? Let's talk.
       </h2>
@@ -262,24 +483,38 @@ function Contact() {
 
 export default function App() {
   return (
-    <div className="mx-auto max-w-[1200px] px-5 pb-14 pt-6 sm:px-10 sm:pb-20 sm:pt-8">
-      <Nav />
-      <main className="mt-8 flex flex-col gap-22">
-        <Hero />
-        <ul className="flex flex-wrap justify-between gap-x-8 gap-y-3 border-y-[1.5px] border-ink py-3.5 text-[15px] font-bold">
-          {stackStrip.map((s) => <li key={s}>{s}</li>)}
-        </ul>
-        <Work />
-        <Activity />
-        <Path />
-        <Skills />
-        <About />
-        <Contact />
-      </main>
-      <footer className="mt-12 flex flex-wrap justify-between gap-2 text-sm text-subtle">
-        <span>2026 {profile.name}</span>
-        <a className="hover:text-accent" href="#top">Back to top</a>
-      </footer>
-    </div>
+    <MotionConfig reducedMotion="user">
+      <div className="mx-auto max-w-300 px-5 pb-14 pt-6 sm:px-10 sm:pb-20 sm:pt-8">
+        <Nav />
+        <main className="mt-8 flex flex-col gap-22">
+          <Hero />
+          <div className="group overflow-hidden border-y-[1.5px] border-ink py-3.5 [mask-image:linear-gradient(to_right,transparent,black_6%,black_94%,transparent)] motion-reduce:overflow-x-auto">
+            <p className="sr-only">Stack: {stackStrip.join(", ")}</p>
+            <ul
+              aria-hidden="true"
+              className="flex w-max animate-marquee text-[15px] font-bold group-hover:[animation-play-state:paused] motion-reduce:animate-none"
+            >
+              {[...stackStrip, ...stackStrip, ...stackStrip].map((s, i) => (
+                <li key={i} className="mr-30 whitespace-nowrap">
+                  {s}
+                </li>
+              ))}
+            </ul>
+          </div>
+          <Work />
+          <Activity />
+          <Path />
+          <Skills />
+          <About />
+          <Contact />
+        </main>
+        <footer className="mt-12 flex flex-wrap justify-between gap-2 text-sm text-subtle">
+          <span>2026 {profile.name}</span>
+          <a className="hover:text-accent" href="#top">
+            Back to top
+          </a>
+        </footer>
+      </div>
+    </MotionConfig>
   );
 }

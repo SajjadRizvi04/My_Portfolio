@@ -25,6 +25,11 @@
 
   --font-display: "Special Elite", "Courier New", monospace;
   --font-body: "Courier Prime", "Courier New", monospace;
+
+  --animate-marquee: marquee 40s linear infinite;
+  @keyframes marquee {
+    to { transform: translateX(-50%); }
+  }
 }
 
 @layer base {

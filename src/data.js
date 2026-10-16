@@ -19,7 +19,7 @@ export const profile = {
 };
 
 export const stackStrip = [
-  "React", "Node.js", "Express", "MongoDB", "PostgreSQL", "Redis", "Docker", "C++",
+  "React", "Node.js", "Express", "PostgreSQL", "Redis", "Docker", "C++",
 ];
 
 export const featured = {
@@ -35,7 +35,7 @@ export const featured = {
   ],
   tags: ["Node.js", "Express", "Redis", "BullMQ", "Razorpay", "Gemini", "Docker"],
   source: "https://github.com/SajjadRizvi04/PactPay",
-  demo: "", // live demo URL, leave empty if there isn't a working one
+  demo: "https://pactpay-frpntend.onrender.com/", // live demo URL, leave empty if there isn't a working one
 };
 
 export const projects = [
@@ -43,7 +43,7 @@ export const projects = [
     title: "HireFlow",
     text: "MERN job portal with Redux Toolkit state management. Job seeker flow is complete; employer dashboard is in progress.",
     tags: ["React", "Redux Toolkit", "Node", "MongoDB"],
-    source: "",
+    source: "https://github.com/SajjadRizvi04/JobSeekers",
     demo: "",
   },
   {
@@ -51,15 +51,8 @@ export const projects = [
     text: "60+ page production visa-services website built during my internship at KallTrip.",
     tags: ["Frontend", "Production"],
     source: "",
-    demo: "",
-  },
-  {
-    title: "Salon booking platform",
-    text: "Booking system with Google Calendar OAuth integration, built during my internship at KallTrip.",
-    tags: ["OAuth", "Google Calendar API"],
-    source: "",
-    demo: "",
-  },
+    demo: "https://www.teyzeevisas.com/",
+  }
 ];
 
 // Shown when the live LeetCode API is unreachable or no username is set.
@@ -89,12 +82,12 @@ export const timeline = [
 export const skills = [
   { label: "Frontend", value: "React, Redux Toolkit" },
   { label: "Backend", value: "Node.js, Express, REST APIs" },
-  { label: "Data", value: "MongoDB, PostgreSQL, Prisma, Redis" },
+  { label: "Data", value: "PostgreSQL, Prisma, Redis" },
   { label: "Tooling", value: "Docker, Git, BullMQ" },
   { label: "Problem solving", value: "C++, 200+ LeetCode problems" },
 ];
 
 export const about = [
   "I'm a final-year computer science student who learns by building and debugging. My strongest work is PactPay, where I dealt with the unglamorous parts of a payments product: retries, concurrency and keeping the ledger honest.",
-  "Outside code I co-lead a campus peer support group. Right now I'm working on DevOps skills and hardening PactPay.",
+  "Outside code I co-lead a campus peer support group. Right now I'm working on my DevOps skills and hardening PactPay.",
 ];
